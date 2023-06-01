@@ -2,9 +2,9 @@
 
 > **作者：刘绍珍**
 
-**随手买-随车智能营销平台 后端项目GitHub仓库地址:**
+**随手买-随车智能营销平台 后端项目GitHub仓库地址:**   https://github.com/Ja-Moarnt/JaMorant_lsz_SSM
 
-**随手买-随车智能营销平台 前端项目GitHub仓库地址:**
+**随手买-随车智能营销平台 前端项目GitHub仓库地址:**   https://github.com/Ja-Moarnt/JaMorant_lsz_SSM_Vue  
 
 **随手买-随车智能营销平台 开发文档百度云盘地址:**  https://pan.baidu.com/s/184S5r_6Kh3zorVcOSbDVUg?pwd=1234
 
