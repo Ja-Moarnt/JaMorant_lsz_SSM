@@ -1,0 +1,60 @@
+项目总结：
+    1、一开始未使用远程调用的的时候，一个模块想要调用另一个模块的服务的时候是直接在
+        pom文件中直接引用，之后发现该服务无法使用，就连启动都会报错，大致意思应该是
+        bean组件重复创建
+        解决方法：通过openfeign远程调用
+    2、小程序登录问题；一开始研究了好久的小程序登录流程
+                1、授权获取微信个人信息
+                2、调用wx.login()获取临时登录凭证code
+                3、用code调用接口换取用户唯一标识openId、用户在微信开放平台账号下的唯一标识unionId和会话密钥session_key
+                4、授权获取手机号
+                5、绑定微信
+                    只需授权然后使用获取的openid，unionid，sessionKey调用后端接口
+                6、返回token
+        最后发现这个问题其实也就是和微信开放平台的一些数据交互
+        和前台多次对接后，决定这个任务直接交给小程序来干，我后台就专心负责用户信息存储
+    3、MP修改数据，使用updateById方法，无法将某个特定的字段修改为空
+            经过查证得到，修改在该实体类的该字段上修改默认属性
+            即
+                @ApiModelProperty(value = "订单id")
+                @TableField(value = "order_id",updateStrategy = FieldStrategy.IGNORED)
+                private Long orderId;
+    4、Gateway网关需要对外暴露Https接口，就需要SSL证书，此证书需要去腾讯云下载下来，
+        保存在项目路径在，在网关服务的配置文件中配置https
+        证书：mo.jamorantxff.fun.jks
+        如下：
+            server.ssl.key-store=mo.jamorantxff.fun.jks
+            server.ssl.key-password=55mdqc6j81r45
+            encrypt.key-store.type=jks
+    5、文件上传服务
+        配置相应的腾讯云用户信息
+        生成 cos 客户端，配置存储桶内部文件夹名称，配置文件输入流
+        最后还要配置特定返回路径；
+
+心得总结：
+        整个开发过程漫长且煎熬，其中收这是我大致学完spring cloud之后所接触到的第一个实战项目收获也很多，整个开发过程配合小组成员后端接口编写，用到了很多我之前没有接触过的技术，比如，比如在这个项目中有统一的结果集返回，还有统一的异常处理，还有一些统一的接口文档，通过接口文档和前台进行进行协作开发整个项目，其中项目中还大量的调用了一些腾讯云的API。整个项目原定是有原来预定是有硬件部分的，只是本次课是没有硬件要求，所以就没有加入进来。这个项目还有很多未完善的部分，主要原因是业务不熟悉，整个代码架构、数据库包括数据库设计，以及以及业务设计，都偏大胆一点，因为本身对这些设计方面的东西也不是很熟，就比如订单生成、订单结束这些，这些设计方面也只是大胆的想一下具体的话后，面对后面如何发展，对后面业务其实也没有想的特别多，更多的是一种走一步看一步的的样子去做的，目前数据库就改了很多次了。开发到一半的时候，发现要那个HTPS域名访问，因为备案这个事情，就腾讯云那边一直在打电话过来过来核实，然后前前后后大概花了十天的样子才备案成功之后才开，才开始正式进入开发流程。也就是说，前十天是进行项目学习，熟悉业务代码，嗯，像那两个前端同学也是去找视频，先学一些前端小程序的大致知识，先学好了之后再来进行，嗯我们整个业务的开发，但是刚要开发的时候，就是因为这个域名问题，所以又拖延了一阵，最后时间可能不太够，但是整个开发过程还是学到了很多东西的。
+
+注意：打包一定要把公共模块以及远程调用模块先install一下，在进行服务service的打包
+    6、thymeleaf页面跳转看清楚是跳转Bovideo还是Bovideo.html
+        要引入依赖<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+            </dependency>
+        ==》
+        还要配置
+            # 设置模板引擎为Thymeleaf
+            spring.thymeleaf.enabled=true
+            # 设置模板所在的classpath目录，这里设置为templates
+            spring.thymeleaf.prefix=classpath:/templates/
+            # 设置模板后缀
+            spring.thymeleaf.suffix=.html
+
+记录2023年3月7日：thymeleaf视图跳转，经过多次尝试，终于找出错误，原来是resources下的
+                静态资源没有编译，在target文件夹下找不到的原因；
+                ==》
+                具体不能编译原因未知，解决方式，直接将templates文件夹复制过去
+
+
+========***********
+关于打包，utils模块和model模块增加一个启动类，且外面的ggkt一定不能有打包工具
+不然这两个工具类模块会继承，会失败，只在service模块下加打包工具就可以。

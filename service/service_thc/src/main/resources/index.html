@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<h1>消息</h1>
+<p id="text"></p>
+<hr>
+<input id="sessionId" placeholder="输入要发送用户的SessionId">
+<button onclick="initWebSocket()">建立连接</button>
+<input id="message" type="text" placeholder="输入要发送的消息">
+<button onclick="sendMessage()">发送消息</button>
+<button onclick="closeWebsocket()">关闭连接</button>
+</body>
+<script>
+  var webSocket;
+  var text=document.getElementById("text");
+
+  function initWebSocket() {
+    var sessionId=document.getElementById("sessionId").value;
+    //判断浏览器是否支持WebSocket
+    if("WebSocket" in window){
+      //注意这里如果是https的话，协议要改成wss而不是ws
+      webSocket=new WebSocket("ws://localhost:443/s/"+sessionId);
+    }
+    else {
+      alert("不支持WebSocket！");
+    }
+    //连接服务器端点成功后的回调
+    webSocket.onopen=function () {
+      showMessage("连接成功")
+    };
+    webSocket.onclose=function () {
+      showMessage("关闭连接");
+    };
+    //收到服务器端点发送来的消息后的回调
+    webSocket.onmessage=function (message) {
+      showMessage(message.data);
+    };
+    webSocket.onerror=function () {
+      showMessage("连接出错");
+    };
+  }
+  function sendMessage() {
+    var msg=document.getElementById("message").value;
+    //向服务器端点发送消息
+    webSocket.send(msg);
+  }
+  function closeWebsocket() {
+    //关闭与服务器端点的连接
+    webSocket.close();
+  }
+  function showMessage(message) {
+    text.innerText+=(message);
+  }
+</script>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <title>腾讯云视频点播示例</title>
+    <link href="https://web.sdk.qcloud.com/player/tcplayer/release/v4.7.2/tcplayer.min.css" rel="stylesheet"/>
+    <!-- 如果需要在 Chrome 和 Firefox 等现代浏览器中通过 H5 播放 Webrtc 视频，需要在 tcplayer.vx.x.x.min.js 之前引入 TXLivePlayer-x.x.x.min.js。 -->
+    <!-- 有些浏览器环境不支持 Webrtc，播放器会将 Webrtc 流地址自动转换为 HLS 格式地址，因此快直播场景同样需要引入 hls.min.x.xx.xm.js。 -->
+    <script src="https://web.sdk.qcloud.com/player/tcplayer/release/v4.7.2/libs/TXLivePlayer-1.2.3.min.js"></script>
+    <!-- 如果需要在 Chrome 和 Firefox 等现代浏览器中通过 H5 播放 HLS 协议的视频，需要在 tcplayer.vx.x.x.min.js 之前引入 hls.min.x.xx.xm.js。 -->
+    <script src="https://web.sdk.qcloud.com/player/tcplayer/release/v4.7.2/libs/hls.min.1.1.6.js"></script>
+    <!-- 如果需要在 Chrome 和 Firefox 等现代浏览器中通过 H5 播放 FLV 格式的视频，需要在 tcplayer.vx.x.x.min.js 之前引入 flv.min.x.x.x.js。 -->
+    <script src="https://web.sdk.qcloud.com/player/tcplayer/release/v4.7.2/libs/flv.min.1.6.3.js"></script>
+    <!-- 如果需要在 Chrome 和 Firefox 等现代浏览器中通过 H5 播放 DASH 视频，需要在 tcplayer.vx.x.x.min.js 之前引入 dash.min.x.x.x.js。 -->
+    <script src="https://web.sdk.qcloud.com/player/tcplayer/release/v4.7.2/libs/dash.all.min.4.5.2.js"></script>
+    <!-- 播放器脚本文件 -->
+    <script src="https://web.sdk.qcloud.com/player/tcplayer/release/v4.7.2/tcplayer.v4.7.2.min.js"></script>
+</head>
+<body>
+<h1>WebSocket Example</h1>
+<p>接收到的消息：</p>
+<ul id="messages"></ul>
+<p>视频：</p>
+<!--<video controls="" muted="muted" autoplay="true" name="media"><source src="http://1309991848.vod2.myqcloud.com/4e0caab6vodcq1309991848/457ccf11243791579200621729/f0.mp4" type="video/mp4"></video>-->
+<!-- 设置播放器容器 -->
+<div id="divx">
+<video muted="muted" id="player-container-id" preload="auto" width="1264" height="720" playsinline webkit-playsinline x5-playsinline></video>
+</div>
+<script>
+
+    var player = TCPlayer("player-container-id", { // player-container-id 为播放器容器ID，必须与html中一致
+        fileID: "243791579147817045", // 请传入需要播放的视频fileID 必须
+        appID: "1309991848", // 请传入点播账号的子应用appID 必须
+        autoplay: true,
+        loop: true // 设置为循环播放
+    });
+    const socket = new WebSocket('wss://mo.jamorantxff.fun/admin/vod/pay');
+
+    socket.onopen = function(event) {
+        console.log('WebSocket 连接成功');
+    };
+
+    socket.onmessage = function(event) {
+        console.log('接收到消息：', event.data);
+        const messages = document.getElementById('messages');
+        const li = document.createElement('li');
+        li.textContent = event.data;
+        messages.appendChild(li);
+            player.load({
+                fileID: event.data,
+                appID: "1309991848"
+            }, function(error) {
+                console.log('Failed to load video:', error);
+            });
+
+    };
+
+    socket.onerror = function(event) {
+        console.error('WebSocket 发生错误：', event);
+    };
+
+    socket.onclose = function(event) {
+        console.log('WebSocket 连接关闭');
+    };
+
+
+</script>
+
+</body>
+</html>
